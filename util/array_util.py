@@ -60,15 +60,15 @@ def squeeze_2x2(x, reverse=False, alt_order=False):
         if reverse:
             if c % 4 != 0:
                 raise ValueError('Number of channels {} is not divisible by 4'.format(c))
-            x = x.view(b, h, w, c // 4, 2, 2)
+            x = x.reshape(b, h, w, c // 4, 2, 2)
             x = x.permute(0, 1, 4, 2, 5, 3)
-            x = x.contiguous().view(b, 2 * h, 2 * w, c // 4)
+            x = x.contiguous().reshape(b, 2 * h, 2 * w, c // 4)
         else:
             if h % 2 != 0 or w % 2 != 0:
                 raise ValueError('Expected even spatial dims HxW, got {}x{}'.format(h, w))
-            x = x.view(b, h // 2, 2, w // 2, 2, c)
+            x = x.reshape(b, h // 2, 2, w // 2, 2, c)
             x = x.permute(0, 1, 3, 5, 2, 4)
-            x = x.contiguous().view(b, h // 2, w // 2, c * 4)
+            x = x.contiguous().reshape(b, h // 2, w // 2, c * 4)
 
         x = x.permute(0, 3, 1, 2)
 
@@ -100,6 +100,6 @@ def checkerboard_mask(height, width, reverse=False, dtype=torch.float32,
         mask = 1 - mask
 
     # Reshape to (1, 1, height, width) for broadcasting with tensors of shape (B, C, H, W)
-    mask = mask.view(1, 1, height, width)
+    mask = mask.reshape(1, 1, height, width)
 
     return mask

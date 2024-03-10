@@ -83,7 +83,7 @@ class BatchNormStats2d(nn.Module):
     def forward(self, x, training):
         # Get mean and variance per channel
         if training:
-            channels = x.transpose(0, 1).contiguous().view(x.size(1), -1)
+            channels = x.transpose(0, 1).contiguous().reshape(x.size(1), -1)
             used_mean, used_var = channels.mean(-1), channels.var(-1)
             curr_mean, curr_var = used_mean, used_var
 
@@ -97,7 +97,7 @@ class BatchNormStats2d(nn.Module):
         used_var += self.eps
 
         # Reshape to (N, C, H, W)
-        used_mean = used_mean.view(1, x.size(1), 1, 1).expand_as(x)
-        used_var = used_var.view(1, x.size(1), 1, 1).expand_as(x)
+        used_mean = used_mean.reshape(1, x.size(1), 1, 1).expand_as(x)
+        used_var = used_var.reshape(1, x.size(1), 1, 1).expand_as(x)
 
         return used_mean, used_var
